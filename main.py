@@ -9,7 +9,7 @@ def RunSiteBot(TOKEN, CHANNEL_ID):
     intents = discord.Intents.default()
     intents.message_content = True
     intents.messages = True
-    bot = commands.Bot(command_prefix='!', intents=intents)
+    bot = commands.Bot(command_prefix='$', intents=intents)
 
     # Disable the built-in help command
     bot.remove_command('help')
@@ -116,6 +116,39 @@ def RunSiteBot(TOKEN, CHANNEL_ID):
             response = response[:1990] + "..."
 
         await ctx.send(response)
+
+    @bot.command()
+    async def rename_website(ctx, old_url: str, new_url: str):
+        # If the URL ends with '/', remove it for consistent database checks
+        if old_url.endswith('/'):
+            old_url = old_url[:-1]
+        if new_url.endswith('/'):
+            new_url = new_url[:-1]
+
+        conn = sqlite3.connect('websites.db')
+        cursor = conn.cursor()
+
+        # First, check if the old URL exists in the database
+        cursor.execute('SELECT id FROM websites WHERE url = ?', (old_url,))
+        if not cursor.fetchone():
+            await ctx.send(f"No record found for URL: {old_url}")
+            conn.close()
+            return
+
+        # Next, check if the new URL already exists to avoid duplicates
+        cursor.execute('SELECT id FROM websites WHERE url = ?', (new_url,))
+        if cursor.fetchone():
+            await ctx.send(f"The new URL already exists: {new_url}")
+            conn.close()
+            return
+
+        # If the old URL exists and the new one doesn't, proceed with the update
+        cursor.execute('UPDATE websites SET url = ? WHERE url = ?', (new_url, old_url))
+        conn.commit()
+        conn.close()
+
+        await ctx.send(f"URL renamed successfully from {old_url} to {new_url}")
+
 
     @tasks.loop(hours=24)
     async def collect_messages(CHANNEL_ID):
