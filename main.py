@@ -22,11 +22,12 @@ def RunSiteBot(TOKEN, CHANNEL_ID):
             color=discord.Color.blue()
         )
 
-        embed.add_field(name="!add_website [url] [description]", value="Add a website to the list with its description.", inline=False)
-        embed.add_field(name="!update_description [url] [new_description]", value="Update the description of an existing website.", inline=False)
-        embed.add_field(name="!list_websites", value="List all stored websites along with their descriptions and reference counts.", inline=False)
-        embed.add_field(name="!site_info [url]", value="Displays a breakdown of all the stored data regarding the website.", inline=False)
-        embed.add_field(name="!help", value="Displays this help message.", inline=False)
+        embed.add_field(name="$add_website [url] [description]", value="Add a website to the list with its description.", inline=False)
+        embed.add_field(name="$update_description [url] [new_description]", value="Update the description of an existing website.", inline=False)
+        embed.add_field(name="$rename_website [current_url] [new_url]", value="Update primary reference URL", inline=False)
+        embed.add_field(name="$list_websites", value="List all stored websites along with their descriptions and reference counts.", inline=False)
+        embed.add_field(name="$site_info [url]", value="Displays a breakdown of all the stored data regarding the website.", inline=False)
+        embed.add_field(name="$help", value="Displays this help message.", inline=False)
 
         await ctx.send(embed=embed)
 
